@@ -17,9 +17,21 @@ use function FastRoute\simpleDispatcher;
  */
 $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/', ['App\Controllers\HomeController', 'home']);
-    $r->addRoute('GET', '/hello/{name}', ['App\Controllers\HelloController', 'greet']);
-});
+    $r->addRoute('POST', '/login', ['App\Controllers\AuthController', 'loginForm']);
+    $r->addRoute('POST', '/logout', ['App\Controllers\AuthController', 'logout']);
+    $r->addRoute('GET', '/dashboard', ['App\Controllers\GameController', 'dashboard']);
+    $r->addRoute('GET', '/dungeon/charactorCreation', ['App\Controllers\DungeonController', 'createCharacter']);
+    $r->addRoute('GET', '/game/room', ['App\Controllers\GameController', 'showRoom']);
+    $r->addRoute('POST', '/game/move', ['App\Controllers\GameController', 'moveDirection']);
+    $r->addRoute('GET', '/game/leaderboard', ['App\Controllers\GameController', 'showLeaderboard']);
+    $r->addRoute('GET', '/dungeon/dashUi', ['App\Controllers\DungeonController', 'dashboardUI']);
+    $r->addRoute('POST', '/dungeon/createRoom', ['App\Controllers\DungeonController', 'createRoom']);
+    $r->addRoute('POST', '/dungeon/createMonster', ['App\Controllers\DungeonController', 'createMonster']);
+    $r->addRoute('POST', '/dungeon/updateMonster', ['App\Controllers\DungeonController', 'updateMonster']);
+    $r->addRoute('POST', '/dungeon/createRoom', ['App\Controllers\DungeonController', 'createRoom']);
+    $r->addRoute('POST', '/dungeon/updateRoom', ['App\Controllers\DungeonController', 'updateRoom']);
 
+});
 
 /**
  * Get the request method and URI from the server variables and invoke the dispatcher.
