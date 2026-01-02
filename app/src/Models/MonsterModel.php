@@ -5,6 +5,7 @@ namespace App\Models;
 class MonsterModel{
     public int $id;
     public string $name;
+    public string $img;
      public int $hp;
     public int $strength;
     public int $agility;

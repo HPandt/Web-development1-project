@@ -5,17 +5,17 @@ namespace App\Controllers;
 
 use App\Core\Repository;
 use App\Repositories\AuthRepository;
+use App\Services\AuthService;
 use App\Models\UserModel;
-use User;
 
 class AuthController
 {
-    private AuthRepository $authRepository;
-
+    
+    private AuthService $authService;
     public function __construct()
     {
-        session_start();
-        $this->authRepository = new AuthRepository();
+        $db = new Repository();
+        $this->authService = new AuthService(new AuthRepository());
     }
 
     public function loginForm()
@@ -26,31 +26,30 @@ class AuthController
 
     public function login(){
         $email = trim($_POST['email'] ?? '');
-        $password = $_POST['password_hash'] ?? '';
+        $password = $_POST['password'] ?? '';
 
         if(!filter_var($email, FILTER_VALIDATE_EMAIL) || empty($password)){
+            $error = "Invalid email or password";
             require(__DIR__ . '/../Views/Auth/login.php');
             return;
         }
 
-        $user = $this->authRepository->findByEmail($email);
-
-        if($user && password_verify($password, $user->password_hash)){
+        $user = $this->authService->login($email, $password);
+        if($user){
             // Successful login
             $_SESSION['user_id'] = $user->id;
             $_SESSION['role'] = $user->role;
 
             // Redirect by role
-        if ($user->role === 'admin') {
-            header('Location: /admin/dashboard');
-        } else {
-            header('Location: /game');
-        }
+            if ($user->role === 'admin') {
+                header('Location: /admin/dashboard');
+            } else {
+                header('Location: /game');
+            }
             exit();
         }else{
             return require(__DIR__ . '/../Views/Auth/login.php');
         }
-
     }
 
     public function registerForm()
@@ -62,17 +61,19 @@ class AuthController
     public function register(){
         $username = trim($_POST['username'] ?? '');
         $email = trim($_POST['email'] ?? '');
-        $password = $_POST['password_hash'] ?? '';
+        $password = $_POST['password'] ?? '';
 
         if(empty($username) || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($password) < 6){
-            return require(__DIR__ . '/../Views/Auth/register.php');
+            $error = "Please provide valid registration details.";
+            require(__DIR__ . '/../Views/Auth/register.php');
+            return;
         }
 
-        $this->authRepository->createUser(
+        $this->authService->createUser(
             $username,
             $email,
             $password,
-            'player'
+            1 
         );
 
         header('Location: /login');

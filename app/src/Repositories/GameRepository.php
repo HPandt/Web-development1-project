@@ -93,11 +93,11 @@ class GameRepository extends Repository implements IGameRepository{
         $reduceMonsterHp->execute([$damage, $monsterId]);
     }
 
-    public function getCurrentRoom(int $dungeonId, int $roomId) {
+    public function getCurrentRoom(int $dungeonId) {
         // Implementation here
-        $sql = "SELECT * FROM rooms WHERE id = ? AND dungeon_id = ?";
+        $sql = "SELECT r.* FROM rooms r JOIN dungeons d ON r.id = d.current_room_id WHERE d.id = ?";
         $getRoom = $this->getConnection()->query($sql);
-        $getRoom->execute([$roomId, $dungeonId]);
+        $getRoom->execute([$dungeonId]);
         return $getRoom->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 

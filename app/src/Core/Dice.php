@@ -4,10 +4,20 @@ namespace App\Core;
 
 use App\Models\CharacterModel;
 use App\Models\MonsterModel;
-use App\Repositories\GameRepository;
+use App\Services\GameService;
+use App\Services\Interface\IGameService;
+use App\Services\RoomService;
+use App\Services\Interface\IRoomService;
 
 class Dice{
 
+    private IGameService $gameService;
+    private IRoomService $roomService;
+    public function __construct(IGameService $gameService, IRoomService $roomService)
+    {
+        $this->gameService = $gameService;
+        $this->roomService = $roomService;
+    }
     public $character = new CharacterModel();
     public $monster = new MonsterModel();
     public static function roll($sides = 20){
@@ -25,10 +35,10 @@ class Dice{
         if ($playerRoll > $monsterRoll) {
             $damage = rand(5, 15);
             $xpGain = $this->monster->xp_reward;
-            $this->character->addXp($this->character->id, $xpGain);
+            $this->gameService->addXP($this->character->id, $xpGain);
             if ($this->monster->hp > 0) {
                 # code...
-                $this->character->reduceMonsterHp($this->monster->id, $damage);
+                $this->gameService->reduceMonsterHp($this->monster->id, $damage);
             } else {
                 # code...
                 $result = "You striked and defeated the {$this->monster->name}!";
@@ -36,7 +46,7 @@ class Dice{
         
         } else {
            $damage = rand(5, 15);
-           $this->character->reduceHp($this->character->id, $damage);
+           $this->gameService->reduceHp($this->character->id, $damage);
            $result = "The {$this->monster->name} hits you! You lose {$damage} HP.";
         }
     }

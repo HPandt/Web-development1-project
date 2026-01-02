@@ -6,6 +6,7 @@ class CharacterModel{
     public int $id;
      public int $user_id;
     public string $name;
+    public string $img;
     public string $class;
     public int $level;
     public int $hp;

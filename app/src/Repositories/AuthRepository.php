@@ -9,8 +9,9 @@ use PDO;
 
 class AuthRepository extends Repository implements IAuthRepository {
     
-    public function findByEmail(string $email){
-        $fetchUser = $this->getConnection()->prepare("SELECT id, username, email, password_hash, role from users where email = :email");
+    public function findByEmail(string $email): ?UserModel{
+        $sql = "SELECT id, username, email, password_hash, role from users where email = :email";
+        $fetchUser = $this->getConnection()->prepare($sql);
         $fetchUser->execute(['email' => $email]);
         $user = $fetchUser->fetch(PDO::FETCH_ASSOC);
         
@@ -27,14 +28,13 @@ class AuthRepository extends Repository implements IAuthRepository {
         );
     }
 
-    public function createUser($username, $email, $password, $roleId=2) {
-        $hash_password = password_hash($password, PASSWORD_DEFAULT);
+    public function createUser(string $username, string $email, string $password, int $roleId=2) {
         $sql = "INSERT INTO users (username, email, password_hash, role) VALUES (:username, :email, :password_hash, :role)";
         $createUser = $this->getConnection()->prepare($sql);
         $createUser->execute([
             'username' => $username,
             'email' => $email,
-            'password_hash' => $hash_password,
+            'password_hash' => $password,
             'role' => $roleId
         ]);
         return $this->getConnection()->lastInsertId();

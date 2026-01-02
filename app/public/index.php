@@ -17,7 +17,10 @@ use function FastRoute\simpleDispatcher;
  */
 $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/', ['App\Controllers\HomeController', 'home']);
-    $r->addRoute('POST', '/login', ['App\Controllers\AuthController', 'loginForm']);
+    $r->addRoute('GET', '/login', ['App\Controllers\AuthController', 'loginForm']);
+    $r->addRoute('POST', '/login', ['App\Controllers\AuthController', 'login']);
+    $r->addRoute('GET', '/register', ['App\Controllers\AuthController', 'registerForm']);
+    $r->addRoute('POST', '/register', ['App\Controllers\AuthController', 'register']);
     $r->addRoute('POST', '/logout', ['App\Controllers\AuthController', 'logout']);
     $r->addRoute('GET', '/dashboard', ['App\Controllers\GameController', 'dashboard']);
     $r->addRoute('GET', '/dungeon/charactorCreation', ['App\Controllers\DungeonController', 'createCharacter']);
@@ -28,10 +31,11 @@ $dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/dungeon/createRoom', ['App\Controllers\DungeonController', 'createRoom']);
     $r->addRoute('POST', '/dungeon/createMonster', ['App\Controllers\DungeonController', 'createMonster']);
     $r->addRoute('POST', '/dungeon/updateMonster', ['App\Controllers\DungeonController', 'updateMonster']);
-    $r->addRoute('POST', '/dungeon/createRoom', ['App\Controllers\DungeonController', 'createRoom']);
     $r->addRoute('POST', '/dungeon/updateRoom', ['App\Controllers\DungeonController', 'updateRoom']);
 
 });
+
+session_start();
 
 /**
  * Get the request method and URI from the server variables and invoke the dispatcher.
@@ -56,6 +60,12 @@ switch ($routeInfo[0]) {
         break;
     // Handle found routes
     case FastRoute\Dispatcher::FOUND:
+        $class = $routeInfo[1][0];
+        $method = $routeInfo[1][1];
+        $controller = new $class();
+        $vars = $routeInfo[2];
+        $controller->$method($vars);
+        
         /**
          * $routeInfo contains the data about the matched route.
          * 
@@ -78,7 +88,7 @@ switch ($routeInfo[0]) {
 
         // TODO: pass the dynamic route data to the controller method
         // When done, visiting `http://localhost/hello/dan-the-man` should output "Hi, dan-the-man!"
-        throw new Exception('Not implemented yet');
+        //throw new Exception('Not implemented yet');
 
         break;
 }
