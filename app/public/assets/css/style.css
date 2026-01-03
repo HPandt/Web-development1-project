@@ -1,0 +1,20 @@
+.game-log {
+    height: 100%;
+    overflow-y: auto;
+    background: #0d0d0d;
+    padding: 1rem;
+    font-family: monospace;
+}
+
+#game-log {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.log-line {
+    line-height: 1.4;
+}
+.log-line.info {
+    color: #00ff00;
+}

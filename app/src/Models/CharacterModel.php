@@ -7,13 +7,12 @@ class CharacterModel{
      public int $user_id;
     public string $name;
     public string $img;
-    public string $class;
+    public int $class;
     public int $level;
     public int $hp;
     public int $strength;
     public int $agility;
     public int $luck;
     public int $experience;
-
 
 }
