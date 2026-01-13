@@ -8,6 +8,7 @@ use App\Repositories\Interface\IGameRepository;
 use App\Services\RoomService;
 use App\Services\Interface\IRoomService;
 use App\Repositories\RoomRepository;
+
 class GameController {
     private IGameService $gameService;
     private IRoomService $roomService;
@@ -19,12 +20,13 @@ class GameController {
     }
 
     // Controller methods to handle game actions
+    // Need to rework to fit api structure. for this and future controllers.
     public function gameDashboard() {
         require(__DIR__ . '/../Views/Game/index.php');
     }
 
     public function startMenu() {
-        require(__DIR__ . '/../Views/Game/start_menu.php');
+        require(__DIR__ . '/../Views/Game/start_screen.php');
     }
     public function startGame() {
         $characterId = $_SESSION['character_id'] ?? null;
@@ -52,28 +54,15 @@ class GameController {
         }
     }
 
-    public function moveDirection($direction){
-        $dungeonId = $_SESSION['dungeon_id'] ?? null;
-        if ($dungeonId) {
-            $this->gameService->chooseDirection($dungeonId, $direction);
-            header('Location: /game/dungeon');
-            exit();
-        } else {
-            $error = "Couldnt move. Error by dungeon not found.";
-            header('Location: /start-game');
-            exit();
-        }
-    }
-
-    public function showCurrentRoom() {
-        $dungeonId = $_SESSION['dungeon_id'] ?? null;
-        if ($dungeonId) {
-            $currentRoomId = $this->gameService->getCurrentRoomId($dungeonId);
-            $room = $this->roomService->getRoomById($currentRoomId);
-            require(__DIR__ . '/../Views/Game/room.php');
-        } else {
-            header('Location: /start-game');
-            exit();
-        }
-    }
+    // public function showCurrentRoom() {
+    //     $dungeonId = $_SESSION['dungeon_id'] ?? null;
+    //     if ($dungeonId) {
+    //         $currentRoomId = $this->gameService->getCurrentRoomId($dungeonId);
+    //         $room = $this->roomService->getRoomById($currentRoomId);
+    //         require(__DIR__ . '/../Views/Game/room.php');
+    //     } else {
+    //         header('Location: /start-game');
+    //         exit();
+    //     }
+    // }
 }

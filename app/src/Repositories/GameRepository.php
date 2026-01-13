@@ -37,13 +37,11 @@ class GameRepository extends Repository implements IGameRepository{
             ];
         }
 
-
         //Direction logic 
         $dir = $direction . "_room_id";
-       if(empty($currentRoom[$dir])){
+        if(empty($currentRoom[$dir])){
         return ['success' => false, 'reason'=> 'wall'];
-       }
-
+        }
 
         return [
             'success' => true,

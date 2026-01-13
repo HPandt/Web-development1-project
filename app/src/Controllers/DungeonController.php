@@ -1,7 +1,9 @@
 <?php
 
 class DungeonController {
-    public function showRoom($dungeonId){
-        
+    public function dashBoard() {
+        require(__DIR__ . '/../Views/Dungeon/index.php');
     }
+
+    
 }
