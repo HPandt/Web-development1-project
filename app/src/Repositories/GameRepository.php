@@ -25,42 +25,29 @@ class GameRepository extends Repository implements IGameRepository{
     }
     public function chooseDirection(int $dungeonId, string $direction) {
         // Implementation here
-        $sql = "SELECT r.* FROM rooms r JOIN dungeons d ON r.dungeon_id = d.id WHERE d.id = ?";
-        $getRooms = $this->getConnection()->query($sql);
+        $sql = "SELECT r.* FROM dungeons d JOIN rooms r ON r.id = d.current_room_id WHERE d.id = ?";
+        $getRooms = $this->getConnection()->prepare($sql);
         $getRooms->execute([$dungeonId]);
         $currentRoom = $getRooms->fetchAll(\PDO::FETCH_ASSOC);
 
-        //Direction logic 
-        $dir = $direction . "_room_id";
-        $nextRoomId = $currentRoom[$dir];
-
-        //if return null 
-        if ($nextRoomId === null) {
+        if (!$currentRoom) {
             return [
                 'success' => false,
-                'message' => 'You walk into a wall. You must choose another direction.'
+                'message' => 'Current room not found.'
             ];
         }
 
-        // Return next room ID
-        $sql = "SELECT * FROM rooms WHERE id = ?";
-        $nextRoom = $this->getConnection()->query($sql);
-        $nextRoom->execute([$nextRoomId]);
-        $nextRoom->fetch(\PDO::FETCH_ASSOC);
 
-        //Update current room
-        $sql = "UPDATE dungeons SET current_room_id = ? WHERE id = ?";
-        $updateRoom = $this->getConnection()->query($sql);
-        $updateRoom->execute([$nextRoomId, $dungeonId]);
+        //Direction logic 
+        $dir = $direction . "_room_id";
+       if(empty($currentRoom[$dir])){
+        return ['success' => false, 'reason'=> 'wall'];
+       }
 
-        //Mark room as discovered
-        $sql = "UPDATE rooms SET discovered = 1 WHERE id = ?";
-        $markDiscovered = $this->getConnection()->query($sql);
-        $markDiscovered->execute([$nextRoomId]);
 
         return [
             'success' => true,
-            'room' => $nextRoom
+            'next_room_id' => $currentRoom[$dir]
         ];
     }
 
@@ -84,13 +71,6 @@ class GameRepository extends Repository implements IGameRepository{
         $sql = "UPDATE characters SET hp = hp - ? WHERE id = ?";
         $reduceHp = $this->getConnection()->query($sql);
         $reduceHp->execute([$damage, $characterId]);
-    }
-
-    public function reduceMonsterHp(int $monsterId, int $damage) {
-        // Implementation here
-        $sql = "UPDATE monsters SET hp = hp - ? WHERE id = ?";
-        $reduceMonsterHp = $this->getConnection()->query($sql);
-        $reduceMonsterHp->execute([$damage, $monsterId]);
     }
 
     public function getCurrentRoom(int $dungeonId) {

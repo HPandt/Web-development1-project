@@ -13,7 +13,6 @@ interface IGameRepository {
     public function showRoom(int $dungeonId, int $roomId);
     public function addXP(int $characterId, int $xpAmount);
     public function reduceHp(int $characterId, int $hpAmount);
-    public function reduceMonsterHp(int $monsterId, int $hpAmount);
     public function getCurrentRoom(int $dungeonId);
     public function getDungeonById(int $dungeonId);
     public function updateCurrentRoom(int $dungeonId, int $roomId);
